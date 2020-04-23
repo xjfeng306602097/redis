@@ -77,18 +77,25 @@ zskiplistNode *zslCreateNode(int level, double score, sds ele) {
 }
 
 /* Create a new skiplist. */
+// 创建跳跃表
 zskiplist *zslCreate(void) {
     int j;
     zskiplist *zsl;
-
+    
+    // 分配跳跃表空间
     zsl = zmalloc(sizeof(*zsl));
+    // 默认层级为1
     zsl->level = 1;
+    // 默认长度为0
     zsl->length = 0;
+    // 创建头节点，头节点的level柔性数组长度为ZSKIPLIST_MAXLEVEL->32位(Redis5为64位，调整为32位估计是为了避免跳跃表层高太高影响遍历效率)
     zsl->header = zslCreateNode(ZSKIPLIST_MAXLEVEL,0,NULL);
+    // 创建level节点，初始化level的后驱指针为NULL
     for (j = 0; j < ZSKIPLIST_MAXLEVEL; j++) {
         zsl->header->level[j].forward = NULL;
         zsl->header->level[j].span = 0;
     }
+    // 设置尾指针为NULL，头至真的前驱为NULL
     zsl->header->backward = NULL;
     zsl->tail = NULL;
     return zsl;
